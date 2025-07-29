@@ -7,8 +7,8 @@ st.title("💬 댓글 이미지 자동 생성기")
 
 # 입력
 bg_color = st.radio("배경 색상 선택", ("흰색", "검은색"))
-nickname = st.text_input("닉네임을 입력하세요", value="닉네임")
-meta = st.text_input("닉네임 옆에 붙는 설명", value="1일 전")
+nickname = st.text_input("닉네임 입력")
+meta = st.text_input("작성일 입력 (예: 1일 전)")
 comment = st.text_area("댓글 내용을 입력하세요 (엔터 가능)")
 uploaded_image = st.file_uploader("프로필 사진 업로드", type=["png", "jpg", "jpeg"])
 
