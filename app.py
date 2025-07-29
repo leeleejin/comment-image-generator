@@ -5,22 +5,21 @@ import io
 st.set_page_config(layout="centered")
 st.title("💬 댓글 이미지 자동 생성기")
 
-# 입력 받기
+# 입력
 bg_color = st.radio("배경 색상 선택", ("흰색", "검은색"))
-nickname = st.text_input("닉네임을 입력하세요")
+nickname = st.text_input("닉네임 입력")
+date_info = st.text_input("작성일 입력 (예: 1일 전)")
 comment = st.text_area("댓글 내용을 입력하세요 (엔터 가능)")
 uploaded_image = st.file_uploader("프로필 사진 업로드", type=["png", "jpg", "jpeg"])
 
 if st.button("이미지 만들기"):
-    # 글꼴 설정
     font_path = "assets/PretendardVariable.ttf"
-    font_nick = ImageFont.truetype(font_path, 20)  # ✅ 여기 크기 20으로 변경
-    font_comment = ImageFont.truetype(font_path, 20)
-
-    # 여백 설정
-    padding = 20  # 상하좌우 동일 여백
-    profile_size = 40
-    spacing = 10  # 닉네임과 댓글 사이
+    font_nick = ImageFont.truetype(font_path, 17)      # 닉네임
+    font_meta = ImageFont.truetype(font_path, 15)      # · 1일 전
+    font_comment = ImageFont.truetype(font_path, 20)   # 댓글
+    padding = 10
+    left_margin = 60
+    right_margin = 20
 
     # 색상 설정
     if bg_color == "흰색":
@@ -30,43 +29,36 @@ if st.button("이미지 만들기"):
         background_color = (0, 0, 0)
         text_color = (255, 255, 255)
 
-    # 텍스트 줄 나누기
+    # 댓글 줄 계산
     lines = comment.split("\n")
-    comment_line_height = font_comment.size + 6
-    comment_height = len(lines) * comment_line_height
-
     max_line_width = max(font_comment.getlength(line) for line in lines)
-    text_block_width = int(max(max_line_width, font_nick.getlength(nickname)))
+    text_width = int(max_line_width + padding * 2)
 
-    content_width = profile_size + spacing + text_block_width
-    total_width = padding * 2 + content_width
-    total_height = padding * 2 + max(profile_size, font_nick.size + spacing + comment_height)
+    line_height = font_comment.size + 6
+    comment_box_height = line_height * len(lines) + padding * 2
+    total_height = max(60 + comment_box_height, 90)
+    total_width = left_margin + text_width + right_margin
 
-    # 이미지 생성
     img = Image.new("RGBA", (total_width, total_height), background_color)
     draw = ImageDraw.Draw(img)
 
-    # 프로필 이미지
+    # 프로필 이미지 원형 자르기
     if uploaded_image:
-        profile = Image.open(uploaded_image).convert("RGBA").resize((profile_size, profile_size))
-        mask = Image.new("L", (profile_size, profile_size), 0)
+        profile = Image.open(uploaded_image).convert("RGBA").resize((40, 40))
+        mask = Image.new("L", (40, 40), 0)
         mask_draw = ImageDraw.Draw(mask)
-        mask_draw.ellipse((0, 0, profile_size, profile_size), fill=255)
-        img.paste(profile, (padding, padding), mask)
+        mask_draw.ellipse((0, 0, 40, 40), fill=255)
+        img.paste(profile, (10, 10), mask)
 
-    # 텍스트 위치 기준점
-    text_x = padding + profile_size + spacing
-    text_y = padding
+    # 닉네임 + 작성일 출력
+    nick_and_date = f"{nickname} · {date_info}"
+    draw.text((left_margin, 10), nick_and_date, font=font_nick, fill=text_color)
 
-    # 닉네임
-    draw.text((text_x, text_y), nickname, font=font_nick, fill=text_color)
-
-    # 댓글 텍스트
+    # 댓글 출력
     for i, line in enumerate(lines):
-        line_y = text_y + font_nick.size + spacing + i * comment_line_height
-        draw.text((text_x, line_y), line, font=font_comment, fill=text_color)
+        draw.text((left_margin, 40 + padding + i * line_height), line, font=font_comment, fill=text_color)
 
-    # 출력 및 다운로드
+    # 이미지 보여주기 및 다운로드
     st.image(img)
     buf = io.BytesIO()
     img.save(buf, format="PNG")
