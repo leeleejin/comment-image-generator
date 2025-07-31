@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 
 st.set_page_config(layout="centered")
-st.title("💬 댓글 이미지 자동 생성기")
+st.title("💬 유튜브 글 이미지 자동 생성기")
 
 # 입력
 bg_color = st.radio("배경 색상 선택", ("흰색", "검은색"))
