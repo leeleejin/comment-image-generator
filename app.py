@@ -51,8 +51,9 @@ if st.button("이미지 만들기"):
         text_color = (255, 255, 255)
 
     # ===== 이미지 생성 =====
-    bbg_rgba = background_color + (255,)
+    bg_rgba = background_color + (255,)
     img = Image.new("RGBA", (total_width, total_height), bg_rgba)
+    draw = ImageDraw.Draw(img)
 
     # ===== 프로필 이미지 =====
     if uploaded_image:
