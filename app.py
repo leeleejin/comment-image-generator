@@ -51,7 +51,7 @@ if st.button("이미지 만들기"):
         text_color = (255, 255, 255)
 
     # ===== 이미지 생성 =====
-    bg_rgba = bg_rgb + (255,)
+    bbg_rgba = background_color + (255,)
     img = Image.new("RGBA", (total_width, total_height), bg_rgba)
 
     # ===== 프로필 이미지 =====
