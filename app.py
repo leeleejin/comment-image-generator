@@ -27,7 +27,7 @@ if st.button("이미지 만들기"):
 
     # 댓글 줄 나누기
     lines = comment.split("\n")
-    max_line_width = max(font_comment.getlength(line) for line in lines)
+    max_line_width = max(font_comment.getlength(line) for line in lines) if lines else 0
     comment_width = int(max_line_width)
     line_height = font_comment.size + gap_between_lines
     comment_height = line_height * len(lines)
@@ -46,22 +46,43 @@ if st.button("이미지 만들기"):
     if bg_color == "흰색":
         background_color = (255, 255, 255)
         text_color = (0, 0, 0)
-    else:
+    elif bg_color == "검은색":
         background_color = (0, 0, 0)
         text_color = (255, 255, 255)
+    else:
+        background_color = (255, 255, 255)
+        text_color = (0, 0, 0)
+
+    # ===== RGBA 값 확인 및 생성 =====
+    if isinstance(background_color, tuple) and len(background_color) == 3:
+        try:
+            bg_rgba = background_color + (255,)
+        except Exception as e:
+            st.error(f"RGBA 생성 실패: {e}")
+            st.stop()
+    else:
+        st.error(f"잘못된 background_color 값: {background_color}")
+        st.stop()
 
     # ===== 이미지 생성 =====
-    bg_rgba = background_color + (255,)
-    img = Image.new("RGBA", (total_width, total_height), bg_rgba)
+    try:
+        img = Image.new("RGBA", (total_width, total_height), bg_rgba)
+    except Exception as e:
+        st.error(f"이미지 생성 실패: {e}")
+        st.stop()
+
     draw = ImageDraw.Draw(img)
 
     # ===== 프로필 이미지 =====
     if uploaded_image:
-        profile = Image.open(uploaded_image).convert("RGBA").resize((profile_size, profile_size))
-        mask = Image.new("L", (profile_size, profile_size), 0)
-        mask_draw = ImageDraw.Draw(mask)
-        mask_draw.ellipse((0, 0, profile_size, profile_size), fill=255)
-        img.paste(profile, (padding_x, padding_y), mask)
+        try:
+            profile = Image.open(uploaded_image).convert("RGBA").resize((profile_size, profile_size))
+            mask = Image.new("L", (profile_size, profile_size), 0)
+            mask_draw = ImageDraw.Draw(mask)
+            mask_draw.ellipse((0, 0, profile_size, profile_size), fill=255)
+            img.paste(profile, (padding_x, padding_y), mask)
+        except Exception as e:
+            st.warning(f"프로필 이미지 처리 실패: {e}")
 
     # 텍스트 시작 위치
     text_start_x = padding_x + profile_size + 10
