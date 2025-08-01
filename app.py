@@ -34,13 +34,13 @@ if st.button("이미지 만들기"):
 
     # 닉네임 + 작성일
     nick_text = f"{nickname} · {meta}"
-    nick_width = font_nick.getlength(nick_text)
+    nick_width = int(font_nick.getlength(nick_text))
     top_text_height = font_nick.size
 
     # 전체 이미지 크기 계산
     text_block_width = max(nick_width, comment_width)
-    total_width = profile_size + 10 + text_block_width + 2 * padding_x
-    total_height = max(profile_size, top_text_height + 10 + comment_height) + 2 * padding_y
+    total_width = int(profile_size + 10 + text_block_width + 2 * padding_x)
+    total_height = int(max(profile_size, top_text_height + 10 + comment_height) + 2 * padding_y)
 
     # ===== 배경 색상 설정 =====
     if bg_color == "흰색":
